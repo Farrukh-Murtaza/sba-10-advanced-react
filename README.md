@@ -1,78 +1,129 @@
-# React + TypeScript + Vite
+# 🍳 Kitchenly — Recipe Discovery App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A recipe discovery app built with React, TypeScript, and [TheMealDB API](https://www.themealdb.com/). Browse recipes by category, search by name, view full recipe details, and save favorites — persisted to `localStorage`.
 
-Currently, two official plugins are available:
+## Screenshots
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Home Page | Loading State | Recipe Detail |
+| --- | --- | --- |
+| ![Home Page ](/public/screenshots/homepage.png) | ![Loading state](/public/screenshots/loading-screen.png) | ![Favourite page](/public/screenshots/favourite-page.png) |
 
-## React Compiler
+| Search Results |  Recipe Detail |
+| --- | --- |
+| ![Search results](/public/screenshots/search.png) | ![Recipe detail page](/public/screenshots/recipe-detail.png) |
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
 
-## Expanding the ESLint configuration
+> Screenshots live in `docs/screenshots/`. See [Capturing Screenshots](#capturing-screenshots) below if you need to regenerate them.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Browse all recipe categories on the home page
+- View all recipes within a category
+- Search recipes by name from the navbar
+- View full recipe details — ingredients, measurements, and instructions
+- Add/remove recipes from favorites, persisted across sessions via `localStorage`
+- Dedicated Favorites page with an empty state
+- Loading and error states throughout
+- Responsive, modern UI built with Tailwind CSS
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- React + TypeScript
+- React Router (`react-router-dom`)
+- Tailwind CSS v4
+- [TheMealDB API](https://www.themealdb.com/api.php) (no API key required)
+
+## Project Structure
 
 ```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+src/
+├── components/
+│   ├── CategoryCard.tsx      # Single category tile
+│   ├── CategoryList.tsx      # Grid of category cards
+│   ├── RecipeCard.tsx        # Single recipe tile with favorite toggle
+│   ├── RecipeList.tsx        # Grid of recipe cards
+│   ├── Navbar.tsx            # Top nav with search bar
+│   ├── LoadingSpinner.tsx    # Shared loading indicator
+│   └── ErrorMessage.tsx      # Shared error display
+├── contexts/
+│   ├── FavoritesContext.tsx  # Context definition + types
+│   └── FavoritesProvider.tsx # Provider implementation (uses useLocalStorage)
+├── hooks/
+│   ├── useFetch.ts           # Generic data-fetching hook (data/loading/error)
+│   ├── useLocalStorage.ts    # Syncs state with localStorage
+│   └── useFavorites.ts       # Convenience hook to consume FavoritesContext
+├── pages/
+│   ├── HomePage.tsx          # "/" — all categories
+│   ├── CategoryPage.tsx      # "/category/:categoryName" — recipes in a category
+│   ├── RecipeDetailPage.tsx  # "/recipe/:recipeId" — full recipe detail
+│   ├── FavoritesPage.tsx     # "/favorites" — saved recipes
+│   ├── SearchPage.tsx        # "/search?query=" — search results
+│   └── NotFound.tsx          # 404 fallback
+├── types/
+│   └── index.ts              # Shared TypeScript interfaces for API responses
+├── App.tsx                   # Routes
+└── main.tsx                  # Entry point, wraps App in FavoritesProvider
 ```
+
+## Routes
+
+| Path | Description |
+| --- | --- |
+| `/` | Grid of all recipe categories |
+| `/category/:categoryName` | All recipes in a given category |
+| `/recipe/:recipeId` | Full detail view for a single recipe |
+| `/favorites` | List of favorited recipes |
+| `/search?query=<term>` | Search results for a recipe name |
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+Then open the local URL printed in your terminal (typically `http://localhost:5173`).
+
+## Custom Hooks
+
+- **`useFetch<T>(url)`** — generic fetch hook returning `{ data, loading, error }`. Re-fetches whenever `url` changes.
+- **`useLocalStorage<T>(key, initialValue)`** — drop-in replacement for `useState` that persists to `localStorage`, used internally by `FavoritesProvider` to keep the favorites list across sessions.
+
+## Favorites (Context API)
+
+`FavoritesContext` exposes:
+- `favoriteIds: string[]`
+- `addFavorite(id: string): void`
+- `removeFavorite(id: string): void`
+- `isFavorite(id: string): boolean`
+
+Consumed anywhere via the `useFavorites()` hook.
+
+## Capturing Screenshots
+
+To (re)generate the screenshots referenced above:
+
+1. Run the app locally with `npm run dev`.
+2. **Loading state** — open dev tools → Network tab → throttle to "Slow 3G", then reload the home page and screenshot before content appears.
+3. **Home page** — screenshot `/` once categories have loaded.
+4. **Search page** — search for a recipe (e.g. "chicken") and screenshot `/search?query=chicken`.
+5. **Detail page** — click into any recipe and screenshot `/recipe/:id`.
+6. Save each image into `docs/screenshots/` using the filenames referenced in this README: `loading.png`, `home.png`, `search.png`, `detail.png`.
+
+## API Reference
+
+This project uses the free, keyless TheMealDB endpoints:
+
+- Categories: `GET /categories.php`
+- Recipes by category: `GET /filter.php?c={category}`
+- Recipe by ID: `GET /lookup.php?i={id}`
+- Search by name: `GET /search.php?s={query}`
+
+Base URL: `https://www.themealdb.com/api/json/v1/1/`
