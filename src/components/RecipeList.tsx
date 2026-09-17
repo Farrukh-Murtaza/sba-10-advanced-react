@@ -10,19 +10,23 @@ function RecipeList({
 }: RecipeListProps) {
     if (recipes.length === 0) {
         return (
-            <div className="py-10 text-center text-gray-500">
-                No recipes found.
+            <div className="flex flex-col items-center gap-2 py-16 text-center text-stone-500">
+                <span className="text-3xl">🥄</span>
+                <p>No recipes found.</p>
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {recipes.map((recipe) => (
-                <RecipeCard
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {recipes.map((recipe, index) => (
+                <div
                     key={recipe.idMeal}
-                    recipe={recipe}
-                />
+                    className="animate-fade-up"
+                    style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+                >
+                    <RecipeCard recipe={recipe} />
+                </div>
             ))}
         </div>
     );

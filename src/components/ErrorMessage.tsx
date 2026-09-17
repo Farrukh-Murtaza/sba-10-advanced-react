@@ -6,12 +6,14 @@ function ErrorMessage({
     message,
 }: ErrorMessageProps) {
     return (
-        <div className="rounded-lg bg-red-50 p-4 text-center text-red-600">
-            <h2 className="font-semibold">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-red-100 bg-red-50/70 px-6 py-10 text-center">
+            <span className="text-3xl">⚠️</span>
+
+            <h2 className="font-display text-lg font-semibold text-red-700">
                 Unable to load recipes
             </h2>
 
-            <p className="mt-1 text-sm">
+            <p className="text-sm text-red-600/80">
                 {message}
             </p>
         </div>
