@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom"
-import HomePage from "./pages/Homepage"
+import HomePage from "./pages/RecipesPage"
 import NotFound from "./pages/NotFound"
 
 function App() {
@@ -8,8 +8,6 @@ function App() {
 
     <Routes>
       <Route index element={<HomePage />} />
-
-
       <Route path="*" element={<NotFound />} />
     </Routes>
 
